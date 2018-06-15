@@ -4,19 +4,19 @@ import "./Whitelist.sol";
 
 contract Crowdsale {
     address owner;
-    Whitelist public instance;
+    Whitelist  instance;
     constructor (address _t) public {
         instance = Whitelist(_t);
         owner = msg.sender;
     }
 
     modifier onlyAuthorized() {
-      require( instance.userAddr(msg.sender) || msg.sender == owner);
+      require( instance.isAdded(msg.sender) || msg.sender == owner);
       _;
     }
-
-    function someFunction() onlyAuthorized public view returns (uint) {
-        return 0;
+    event SomeEvent(bool ok);
+    function someFunction() onlyAuthorized public {
+        emit SomeEvent(true);
     }
 
 }

@@ -1,7 +1,7 @@
 const Whitelist = artifacts.require('Whitelist')
 const Crowdsale = artifacts.require('Crowdsale')
 contract('Whitelist', addresses => {
-  console.log('comienza test')
+
   const owner = addresses[0]
   const autorized = addresses[2]
   const notAutorized = addresses[3]
@@ -9,16 +9,15 @@ contract('Whitelist', addresses => {
   let instanceCrowdsale
   before(async () => {
      instanceWhitelist = await Whitelist
-      .new( {from: owner})
+      .new( )
      instanceCrowdsale = await Crowdsale
-      .new(instanceWhitelist.address ,{from: owner})
+      .new(instanceWhitelist.address)
   })
-
-  describe('testing functionality', () => {
+  describe('testing functionality', async () => {
 
     it('autorized cant use someFunction when is not instantiated', async () => {
       try {
-        await instanceCrowdsale.someFunction( { from: autorized})
+        await instanceCrowdsale.someFunction({ from: autorized})
         assert.fail()
       }
       catch(error) {
@@ -45,8 +44,15 @@ contract('Whitelist', addresses => {
 
     it('autorized can use someFunction', async () => {
       try {
-        let func = await instanceCrowdsale.someFunction( { from: autorized})
-        assert.equal(func, 0)
+        await instanceCrowdsale.someFunction( { from: autorized})
+        instanceCrowdsale.SomeEvent().get((error, res) => {
+          if (error){
+            assert(false,"The method should not fail")
+          }
+          else{
+            assert(res[0].args.ok)
+          }
+        })
       }
       catch(error) {
         assert(false,"The method should not fail")
